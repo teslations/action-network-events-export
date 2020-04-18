@@ -8,6 +8,8 @@ Extracting Event Data from Action Network
 for creating an ICS format calendar
 for importing into Google Calendar
 
+------------------
+
 References: 
 
 Action Network API Reference
@@ -19,8 +21,9 @@ https://icalendar.org/RFC-Specifications/iCalendar-RFC-5545/
 iCalendar Validator
 https://icalendar.org/validator.html
 
-# This is a BETA work in progress.
-# It's not working correctly yet.
+------------------
+
+The LOCATION currently points to the URL of the event on Action Network, not the physical location of the event.
 
 # For this to work:
 # ***** You must enter your Action Network API KEY ******

@@ -19,7 +19,8 @@ https://icalendar.org/RFC-Specifications/iCalendar-RFC-5545/
 iCalendar Validator
 https://icalendar.org/validator.html
 
-# This is a BETA work in progress. It's not working correctly yet.
+# This is a BETA work in progress.
+# It's not working correctly yet.
 
 # For this to work:
 # ***** You must enter your Action Network API KEY ******

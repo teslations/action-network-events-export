@@ -2,7 +2,7 @@
 
 # Export Action Network Events to ICS calendar
 
-Uses python3.7
+Uses Python 3.7
 
 Extracting Event Data from Action Network
 for creating an ICS format calendar
@@ -22,9 +22,12 @@ iCalendar Validator
 https://icalendar.org/validator.html
 
 ------------------
+TO DO:
 
-The LOCATION currently points to the URL of the event on Action Network, not the physical location of the event.
+- LOCATION currently links to the Action Network URL (browser url).
+- START DATE
+- DATE END (DTEND) is not present in the Action Network export.
 
-# For this to work:
+# For this to work your Action Network API KEY must be entered in this section of the program:
 # ***** You must enter your Action Network API KEY ******
 # api_key = 'ENTER YOUR API KEY HERE'

@@ -8,11 +8,6 @@
 # https://actionnetwork.org/docs/v2/events
 #
 # iCalendar specifications (RFC 5545)
-#
-# This document defines the iCalendar data format for representing
-# and exchanging calendaring and scheduling information such as
-# events, to-dos, journal entries, and free/busy information,
-# independent of any particular calendar service or protocol.
 # https://icalendar.org/RFC-Specifications/iCalendar-RFC-5545/
 #
 # iCalendar Validator
@@ -20,6 +15,7 @@
 #
 #********* You must enter your API KEY here **********
 #api_key = 'ENTER YOUR API KEY HERE'
+
 
 endpoint = 'https://actionnetwork.org/api/v2/events/'
 
@@ -37,21 +33,16 @@ response = requests.get(endpoint,
 if response:
   #Request is successful
 
-  #unformatted output
-  #print(response.json())
-
   #Read the output
   data = response.text
   
   #Parse JSON – convert the string to JSON
   parsed = json.loads(data)
 
-  #Pretty print
-  #print(json.dumps(parsed, indent=4))
-
   events = parsed["_embedded"]["osdi:events"]
+
+  #Pretty Print (uncomment for pretty print)
   #print(json.dumps(events, indent=4))
-  #print(events)
 
   #----CALENDAR----
   print ('BEGIN:VCALENDAR')
@@ -67,78 +58,130 @@ if response:
   print ('TZID:Australia/Brisbane')
   print ('X-LIC-LOCATION:Australia/Brisbane')
 
+  #----STANDARD----
   print ('BEGIN:STANDARD')
   print ('TZOFFSETFROM:+1000')
   print ('TZOFFSETTO:+1000')
   print ('TZNAME:AEST')
   print ('DTSTART:19700101T000000')
   print ('END:STANDARD')
+  
   print ('END:VTIMEZONE')
 
   for i in events:
     #----VEVENT----
     print ('BEGIN:VEVENT')
-    #DTSTART:19970714T133000                         ; Local time
-    #DTSTART:19970714T173000Z                        ; UTC time
-    #DTSTART;TZID=America/New_York:19970714T133000   ; Local time and time zone reference
-    #(Action Network format: start_date: 2019-11-24T12:00:00Z)
-        
+
+    #3.8.2.4. Date-Time Start - when the calendar component begins
     orig_start_date = i['start_date']
     split_start_date = orig_start_date.split("T")
     mod_start_date = split_start_date[0].replace("-", "")
-                                           
     print ('DTSTART;VALUE=DATE:' + mod_start_date)
 
+    #3.8.2.2. Date-Time End - the date and time that a calendar component ends.
+    #DTEND:20200422T150000Z
     #DTEND;VALUE=DATE:20200422
-    print ('DTEND;VALUE=DATE:' + mod_start_date)
+    #print ('DTEND;VALUE=DATE:' + mod_start_date)
 
-    #Recurring event
-    #RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20200508T135959Z;BYDAY=FR
+    #3.8.5.3. Recurrence Rule
     #print ('RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20200508T135959Z;BYDAY=FR')
 
-    print ('DTSTAMP:20200418T001100Z')
-
-    #Date time
+    #Current Date Time
     now = datetime.datetime.now()
     utc = pytz.utc.localize(datetime.datetime.utcnow())
     utcdate = utc.strftime("%Y%m%d")
     utctime = utc.strftime("%H%M%S")
     uid = utc.strftime("%Y%m%d%S%f")
+    utcnow = utcdate + 'T' + utctime + 'Z'
 
-    print ('UID:' + uid + '@google.com')
+    #3.8.7.2. Date-Time Stamp
+    #DTSTAMP:20200418T001100Z
+    print ('DTSTAMP:' + utcnow)
 
-    print ('CREATED:' + i['created_date'])
+    #3.8.4.7. Unique Identifier
+    print ('UID:' + uid + '@teslations.ddns.net')
 
+    # 3.8.7.1. Date-Time Created
+    # date and time that the calendar
+    # information was created by the calendar user agent in the calendar store.
+    #(The date the event was created)
+    #Change format from 2019-12-05T04:03:06Z to 19960329T133000Z
+    orig_created_date = i['created_date']
+    x = orig_created_date.replace("-", "")
+    mod_created_date = x.replace(":", "")
+    print ('CREATED:' + mod_created_date)
+
+    #3.8.1.5. Description
+    #End lines with CRLF
     print ('DESCRIPTION:' + i['description'])
-    
-    # Now YYYYMMDDTHHMMSSZ
-    print ('LAST-MODIFIED:' + i['modified_date'])
 
+    #3.8.7.3. Last Modified
+    orig_modified_date = i['modified_date']
+    x = orig_modified_date.replace("-", "")
+    mod_modified_date = x.replace(":", "")
+    print ('LAST-MODIFIED:' + mod_modified_date)
+
+    #3.8.1.7. Location (The venue of the calendar event)
+    ### CHANGE to the Location,
+    '''
+    ----- Examples of this property
+    LOCATION:Conference Room - F123\, Bldg. 002
+    LOCATION;ALTREP="http://xyzcorp.com/conf-rooms/f123.vcf":
+    Conference Room - F123\, Bldg. 002
+    ----
+                "location": {
+                    "address_lines": [
+                        "Extinction Park 3321 Carbon Rd, Rebellion Grove QLD 4000"
+                    ],
+                    "country": "AU",
+                    "locality": "Brisbane",
+                    "location": {
+                        "accuracy": "Rooftop",
+                        "latitude": -27.402343999999996,
+                        "longitude": 152.93726100000003
+                    },
+                    "postal_code": "4000",
+                    "venue": "Extinction Park, Rebellion Grove"
+    '''
     print ('LOCATION:' + i['browser_url'])
+
+    #3.8.7.4. Sequence Number
+    # revision sequence number of the calendar component within a sequence of revisions.
     print ('SEQUENCE:0')
-    print ('STATUS:CONFIRMED')
+
+    #3.8.1.11. Status
+    # overall status or confirmation for the calendar component.
+    print ('STATUS:' + i['status'])
+
+    #3.8.1.12. Summary
+    # short summary or subject for the calendar component.
     print ('SUMMARY:' + i['title'])
-    print ('TRANSP:OPAQUE')
+
+    #3.8.2.7. Time Transparency
+    # whether or not an event is transparent to busy time searches.
+    print ('TRANSP:' + i['transparence'])
 
     #----VALARM----
     print ('BEGIN:VALARM')
+
+    #3.8.6.1. Action
+    # the action to be invoked when an alarm is triggered. (AUDIO or DISPLAY)
     print ('ACTION:DISPLAY')
+    
     print ('DESCRIPTION:This is an event reminder')
+
+    #3.8.6.3. Trigger - when an alarm will trigger.
     print ('TRIGGER:-P0DT4H0M0S')
+
     print ('END:VALARM')
     print ('END:VEVENT')
     
   print ('END:VCALENDAR')
 
-
 else:
   print('Request returned an error.')
   print(response.status_code)
 
-# Retrieve an individual event resource (GET)
-#
-#EVENT_ID=8a625981-67a4-4457-8b55-2e30b267b2c2
-#https://actionnetwork.org/api/v2/events/$EVENT_ID OSDI-API-Token:$API_KEY
   
 
 

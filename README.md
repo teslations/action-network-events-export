@@ -25,9 +25,9 @@ https://icalendar.org/validator.html
 TO DO:
 
 - LOCATION currently links to the Action Network URL (browser url).
-- START DATE
 - DATE END (DTEND) is not present in the Action Network export.
 
 # For this to work your Action Network API KEY must be entered in this section of the program:
 # ***** You must enter your Action Network API KEY ******
 # api_key = 'ENTER YOUR API KEY HERE'
+and your TZID in the SETTINGS section.

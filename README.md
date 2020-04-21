@@ -40,8 +40,10 @@ https://icalendar.org/validator.html
 
 TO DO:
 ------
+
 There is no DTEND (DATE END) in the Action Network export but there is a date end field in the Action Network event entry forms. ???
 
 Automatically calculate these from entered TZID value:print ('TZOFFSETFROM:+1000')print ('TZOFFSETTO:+1000')print ('TZNAME:AEST')
 
 The times from AN network are stated as Z (UTC) but are actually local times."start_date": "2019-11-29T16:00:00Z" is 16:00 AESTIt looks like the times that are entered into events are meant to be entered in UTC timeShould I modify to suit AN data entry errors?When viewed in the Next cloud calendar the internals of the events show times as local times but are labelled as UTC. The calendar event titles are then displayed as AEST + 10 hours.
+

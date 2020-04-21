@@ -6,6 +6,7 @@
 #
 # Action Network API Reference
 # https://actionnetwork.org/docs/v2/events
+# HAL+JSON format. It generally conforms to the Open Supporter Data Interface (OSDI) specification version 1.0.2
 #
 # iCalendar specifications (RFC 5545)
 # https://icalendar.org/RFC-Specifications/iCalendar-RFC-5545/
@@ -13,17 +14,18 @@
 # iCalendar Validator
 # https://icalendar.org/validator.html
 #
+# NOTE:  You need to enter your API KEY and TZID in SETTINGS below to run this program
+#
 #****************************SETTINGS****************************
-#**** API KEY
+#**** Enter your API KEY here
 api_key = 'ENTER YOUR API KEY HERE'
 
 
 endpoint = 'https://actionnetwork.org/api/v2/events/'
 
-#**** TimeZone
-TZID = 'Australia/Brisbane'
+#**** Enter your TimeZone here
+TZID = 'UTC'
 #*******************************************************************
-
 import requests
 import json
 import datetime
@@ -64,11 +66,9 @@ if response:
 
   #----STANDARD----
   print ('BEGIN:STANDARD')
-  # ***** TO DO - Calculate these from TZID
   print ('TZOFFSETFROM:+1000')
   print ('TZOFFSETTO:+1000')
   print ('TZNAME:AEST')
-  
   print ('DTSTART:19700101T000000Z')
   print ('END:STANDARD')
   
@@ -80,22 +80,21 @@ if response:
     print ('BEGIN:VEVENT')
 
     #3.8.2.4. Date-Time Start - when the calendar component begins
-    #"start_date": "2019-12-13T14:00:00Z" (Action Network)
-    #DTSTART:20201213T140000Z (Google)
-     #Change format from 2019-12-05T04:03:06Z to 20191205T040306Z
     orig_start_date = i['start_date']
-    # Create datetime object
     d = datetime.datetime.strptime(orig_start_date, "%Y-%m-%dT%H:%M:%SZ")
     mod_start_date = d.strftime("%Y%m%dT%H%M%SZ")
     print ('DTSTART:' + mod_start_date)
 
-    #3.8.2.2. Date-Time End - the date and time that a calendar component ends.
-    #DTEND:20200422T150000Z
-    #DTEND;VALUE=DATE:20200422
-    #TO DO -There is no end_date key in Action Network exports
+    #3.8.2.2. Date-Time End - the date and time that a calendar component ends
+    # There is no end date field in Action Network
+#    orig_end_date = i['end_date']
+#    d = datetime.datetime.strptime(orig_end_date, "%Y-%m-%dT%H:%M:%SZ")
+#    mod_end_date = d.strftime("%Y%m%dT%H%M%SZ")
+#    print ('DTEND:' + mod_end_date)
 
     #3.8.5.3. Recurrence Rule
-    #print ('RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20200508T135959Z;BYDAY=FR')
+    # There is no Recurrence field in Action Network
+#    print ('RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20200508T135959Z;BYDAY=FR')
 
     #----Current Date Time in 20200418T001100Z format
     now = datetime.datetime.now()
@@ -129,9 +128,9 @@ if response:
     mod_description4 = mod_description3.replace("<a href=", "")
     mod_description5 = mod_description4.replace("'\">'", " ")
     mod_description = mod_description5.replace("</a>", " ")
-    #mod_description = mod_description5.replace("<br>", "\r")
-    print ('DESCRIPTION:' + mod_description)
-    
+#    mod_description = mod_description5.replace("<br>", "\r")
+    print ('DESCRIPTION:' + mod_description + '\r' + i['browser_url'])
+
     #3.8.7.3. Last Modified
     #Change format from 2019-12-05T04:03:06Z to 19960329T133000Z
     orig_modified_date = i['modified_date']
@@ -140,28 +139,7 @@ if response:
     print ('LAST-MODIFIED:' + mod_modified_date)
 
     #3.8.1.7. Location (The venue of the calendar event)
-    # TO DO - CHANGE to the venue Location,
-    '''
-    ----- Examples of this property
-    LOCATION:Conference Room - F123\, Bldg. 002
-    LOCATION;ALTREP="http://xyzcorp.com/conf-rooms/f123.vcf":
-    Conference Room - F123\, Bldg. 002
-    ----
-                "location": {
-                    "address_lines": [
-                        "Extinction Park 3321 Carbon Rd, Rebellion Grove QLD 4000"
-                    ],
-                    "country": "AU",
-                    "locality": "Brisbane",
-                    "location": {
-                        "accuracy": "Rooftop",
-                        "latitude": -27.402343999999996,
-                        "longitude": 152.93726100000003
-                    },
-                    "postal_code": "4000",
-                    "venue": "Extinction Park, Rebellion Grove"
-    '''
-    print ('LOCATION:' + i['browser_url'])
+    print ('LOCATION:' + i['location']['venue'],i['location']['address_lines'])
 
     #3.8.7.4. Sequence Number
     # revision sequence number of the calendar component within a sequence of revisions.
@@ -197,8 +175,8 @@ if response:
   print ('END:VCALENDAR')
 
 else:
-  print('Request returned an error.')
-  print(response.status_code)
+  print ('Request returned an error.')
+  print (response.status_code)
 
 
 

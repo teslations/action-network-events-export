@@ -1,5 +1,4 @@
 # action_network_events_export
-
 # Export Action Network Events to ICS calendar
 
 Uses Python 3.7
@@ -9,8 +8,24 @@ for creating an ICS format calendar
 for importing into Google Calendar
 
 ------------------
+Written for Python 3
 
-References: 
+An API KEY is needed to run it, which is obtainable from the API & Sync section of Action Network.
+
+You must change these in the SETTINGS section of the program to run it.
+
+#api_key = 'ENTER YOUR API KEY HERE'
+#TZID = ENTER YOUR TIME ZONE
+
+Rename the file to remove the -NO_APIKEY suffix.
+
+Run python3 AN-events_export-ics.py > calendar.ics to create the file.Running this in a cron job gives a 0 byte output file.I had to run it from a shell script in cron to get it to work.
+
+Import calendar.ics into a calendar that supports ICS.
+
+
+References:
+----------- 
 
 Action Network API Reference
 https://actionnetwork.org/docs/v2/events
@@ -22,12 +37,11 @@ iCalendar Validator
 https://icalendar.org/validator.html
 
 ------------------
+
 TO DO:
+------
+There is no DTEND (DATE END) in the Action Network export but there is a date end field in the Action Network event entry forms. ???
 
-- LOCATION currently links to the Action Network URL (browser url).
-- DATE END (DTEND) is not present in the Action Network export.
+Automatically calculate these from entered TZID value:print ('TZOFFSETFROM:+1000')print ('TZOFFSETTO:+1000')print ('TZNAME:AEST')
 
-# For this to work your Action Network API KEY must be entered in this section of the program:
-# ***** You must enter your Action Network API KEY ******
-# api_key = 'ENTER YOUR API KEY HERE'
-and your TZID in the SETTINGS section.
+The times from AN network are stated as Z (UTC) but are actually local times."start_date": "2019-11-29T16:00:00Z" is 16:00 AESTIt looks like the times that are entered into events are meant to be entered in UTC timeShould I modify to suit AN data entry errors?When viewed in the Next cloud calendar the internals of the events show times as local times but are labelled as UTC. The calendar event titles are then displayed as AEST + 10 hours.

@@ -1,8 +1,6 @@
 # action_network_events_export
 # Export Action Network Events to ICS calendar
 
-Uses Python 3.7
-
 Extracting Event Data from Action Network
 for creating an ICS format calendar
 for importing into Google Calendar
